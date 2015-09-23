@@ -20,8 +20,11 @@ $app->register(new Provider\SwiftmailerServiceProvider());
 $app->register(new Provider\TwigServiceProvider());
 $app->register($simpleUserProvider);
 
+// Pimple dumper for auto hinting in the IDE
+$app->register(new Sorien\Provider\PimpleDumpProvider());
+
 // Configure twig to look for layouts
-$app['twig.path'] = [__DIR__.'/views'];
+$app['twig.path'] = [__DIR__.'/src/views'];
 
 // Database options needed for security provider
 $app['db.options'] = array(
@@ -40,6 +43,9 @@ $app->mount('/user', $simpleUserProvider);
 $app['security.firewalls'] = array(
     'login' => array(
         'pattern' => '^/user/login$',
+    ),
+    'index' => array(
+        'pattern' => '^/$',
     ),
     'register' => array(
         'pattern' => '^/user/register$',
@@ -70,6 +76,9 @@ $app['user.options'] = [
         'layout' => 'layout.twig',
     ]
 ];
+$app['twig.templates'] = ['layout'=>'views/layout.twig'];
+
+$app->get('/', 'app\controller\index::indexAction');
 
 $app->get('/hello/{name}', function ($name) use ($app) {
     return 'Hello ' . $app->escape($name);
