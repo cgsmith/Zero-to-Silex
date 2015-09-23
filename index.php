@@ -5,6 +5,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 
 $app = new Silex\Application();
+$app['debug'] = true;
 
 
 // Below is required for user related stuff - they are used elsewhere as well
@@ -18,6 +19,9 @@ $app->register(new Provider\UrlGeneratorServiceProvider());
 $app->register(new Provider\SwiftmailerServiceProvider());
 $app->register(new Provider\TwigServiceProvider());
 $app->register($simpleUserProvider);
+
+// Configure twig to look for layouts
+$app['twig.path'] = [__DIR__.'/views'];
 
 // Database options needed for security provider
 $app['db.options'] = array(
@@ -60,6 +64,12 @@ $app['security.firewalls'] = array(
     ),
 );
 
+// Tell the user provider to override the layout.twig
+$app['user.options'] = [
+    'templates' => [
+        'layout' => 'layout.twig',
+    ]
+];
 
 $app->get('/hello/{name}', function ($name) use ($app) {
     return 'Hello ' . $app->escape($name);
